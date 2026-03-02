@@ -187,7 +187,7 @@ xlabel('Time {\itt} (sec)');ylabel('$\hat{\Psi}(t)$');
 
 %% Auxiliary function definitions
 
-% System dynamics function (includes leader, follower, controller)
+% System dynamics function (includes exosystem, plant, controller)
 function dxdt = system_dynamics(t, x, u_const, M, N, ...
     ind_v1, ind_v2, ind_z1, ind_z2, ind_y, ...
     ind_eta1, ind_eta2, ind_psi1, ind_psi2, ind_K)
@@ -197,11 +197,11 @@ function dxdt = system_dynamics(t, x, u_const, M, N, ...
     e = x(ind_y);
     eta = [x(ind_eta1); x(ind_eta2)];
     
-    % Leader dynamics (1)
+    % exosystem dynamics (1)
     dxdt(ind_v1) = x(ind_v2);
     dxdt(ind_v2) = -x(ind_v1);
     
-    % Follower dynamics (2)
+    % plant dynamics (2)
     dxdt(ind_z1) = -0.5 * x(ind_z1) + 0.5 * e;
     dxdt(ind_z2) = -0.5 * x(ind_z2) - 0.5 * e;
     dxdt(ind_y)  = e - (1/3)*e^3 - x(ind_z1) + x(ind_z2) + x(ind_v1) + u_const;
@@ -231,7 +231,7 @@ function [value, isterminal, direction] = event_condition(t, x, xi, delta, beta,
     eta = [x(ind_eta1); x(ind_eta2)];
     rho = e^4 + 1;
     
-    % Compute the two components of \tilde{v}_c (6) 
+    % Compute the two components of \tilde{v}_c (6)
     vc1 = psi_prev * eta_prev - psi * eta;          % scalar
     vc2 = -K_prev * rho_prev * e_prev + K * rho * e; % scalar
     norm_vc_sq = vc1^2 + vc2^2;
